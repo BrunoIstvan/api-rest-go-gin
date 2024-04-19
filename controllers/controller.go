@@ -98,6 +98,21 @@ func UpdateStudentById(c *gin.Context) {
 
 }
 
+func LoadIndexPage(c *gin.Context) {
+
+	students := services.ListAllStudents()
+	c.HTML(http.StatusOK, "index.html", gin.H{
+		"students": students,
+	})
+
+}
+
+func LoadNotFoundPage(c *gin.Context) {
+
+	c.HTML(http.StatusNotFound, "404.html", nil)
+
+}
+
 func validateIfItIsOnlyNumber(c *gin.Context, value string, fieldName string, regExp string) bool {
 	var re = regexp.MustCompile(regExp)
 	if !re.MatchString(value) {
