@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -23,7 +22,6 @@ func GetStudentById(c *gin.Context) {
 	strId := c.Params.ByName("id")
 	id := parseAndValidateId(c, strId, `^[0-9]+$`)
 	if id == 0 {
-		fmt.Print("Saindo por conta de ID inválido")
 		return
 	}
 	response := getStudentByIdAndValidateResponse(c, id)
@@ -38,7 +36,6 @@ func SearchStudentByCPF(c *gin.Context) {
 
 	cpf := c.Params.ByName("cpf")
 	if !validateIfItIsOnlyNumber(c, cpf, "cpf", `^[0-9]{11}$`) {
-		fmt.Print("Saindo por conta de CPF inválido")
 		return
 	}
 	response, err := services.SearchStudentByCPF(cpf)
@@ -70,7 +67,6 @@ func DeleteStudentById(c *gin.Context) {
 	strId := c.Params.ByName("id")
 	id := parseAndValidateId(c, strId, `^[0-9]+$`)
 	if id == 0 {
-		fmt.Print("Saindo por conta de ID inválido")
 		return
 	}
 	err := services.DeleteStudentById(id)
@@ -87,12 +83,10 @@ func UpdateStudentById(c *gin.Context) {
 	strId := c.Params.ByName("id")
 	id := parseAndValidateId(c, strId, `^[0-9]+$`)
 	if id == 0 {
-		fmt.Print("Saindo por conta de ID inválido")
 		return
 	}
 	var request dtos.StudentRequestDTO
 	if !bindStudentData(c, &request) {
-		fmt.Print("Saindo por conta de erro de bind de dados")
 		return
 	}
 	response, err := services.UpdateStudentById(id, &request)
