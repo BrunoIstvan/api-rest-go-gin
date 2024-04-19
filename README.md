@@ -19,3 +19,11 @@ Iniciar container do banco de dados
 Iniciar a aplicação
 
     go run main.go
+
+Página de listagem de todos os alunos
+
+    http://localhost:8080/index
+
+Página não encontrada
+
+    http://localhost:8080/home
