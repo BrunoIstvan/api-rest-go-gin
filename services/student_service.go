@@ -24,8 +24,8 @@ func GetStudentById(id uint64) (*dtos.StudentResponseDTO, error) {
 
 	var student models.Student
 	database.DB.First(&student, id)
-	if !validateStudentExists(&student) {
-		return nil, errors.New("Student not found!")
+	if err := validateStudentExists(&student); err != nil {
+		return nil, err
 	}
 	return convertStudentModelToDTO(&student), nil
 
@@ -35,8 +35,8 @@ func SearchStudentByCPF(cpf string) (*dtos.StudentResponseDTO, error) {
 
 	var student models.Student
 	database.DB.Where(&models.Student{CPF: cpf}).First(&student)
-	if !validateStudentExists(&student) {
-		return nil, errors.New("Student not found!")
+	if err := validateStudentExists(&student); err != nil {
+		return nil, err
 	}
 	return convertStudentModelToDTO(&student), nil
 
@@ -54,7 +54,9 @@ func CreateStudent(studentDTO *dtos.StudentRequestDTO) (*dtos.StudentResponseDTO
 }
 
 func DeleteStudentById(id uint64) error {
-
+	if _, err := GetStudentById(id); err != nil {
+		return err
+	}
 	var studentModel models.Student
 	if result := database.DB.Delete(&studentModel, id); result == nil {
 		return errors.New("Error while deleting Student!")
@@ -68,8 +70,7 @@ func UpdateStudentById(id uint64, studentDTO *dtos.StudentRequestDTO) (*dtos.Stu
 		fmt.Print("Saindo por conta de erro na validação dos dados de entrada!", err)
 		return nil, err
 	}
-	dto, err := GetStudentById(id)
-	if err != nil {
+	if _, err := GetStudentById(id); err != nil {
 		return nil, err
 	}
 	studentModel := convertStudentDTOToModel(studentDTO)
@@ -77,12 +78,15 @@ func UpdateStudentById(id uint64, studentDTO *dtos.StudentRequestDTO) (*dtos.Stu
 	if result := database.DB.Save(studentModel); result == nil {
 		return nil, errors.New("Error while updating Student!")
 	}
-	dto = convertStudentModelToDTO(studentModel)
+	dto := convertStudentModelToDTO(studentModel)
 	return dto, nil
 }
 
-func validateStudentExists(student *models.Student) bool {
-	return student.ID != 0
+func validateStudentExists(student *models.Student) error {
+	if student.ID == 0 {
+		return errors.New("Student not found!")
+	}
+	return nil
 }
 
 func convertStudentModelToDTO(model *models.Student) *dtos.StudentResponseDTO {

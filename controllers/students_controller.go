@@ -73,10 +73,6 @@ func DeleteStudentById(c *gin.Context) {
 		fmt.Print("Saindo por conta de ID inválido")
 		return
 	}
-	response := getStudentByIdAndValidateResponse(c, id)
-	if response == nil {
-		return
-	}
 	err := services.DeleteStudentById(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
@@ -94,17 +90,11 @@ func UpdateStudentById(c *gin.Context) {
 		fmt.Print("Saindo por conta de ID inválido")
 		return
 	}
-	responseGet := getStudentByIdAndValidateResponse(c, id)
-	if responseGet == nil {
-		fmt.Print("Saindo por não encontrar usuário pelo ID")
-		return
-	}
 	var request dtos.StudentRequestDTO
 	if !bindStudentData(c, &request) {
 		fmt.Print("Saindo por conta de erro de bind de dados")
 		return
 	}
-	fmt.Print(request)
 	response, err := services.UpdateStudentById(id, &request)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
